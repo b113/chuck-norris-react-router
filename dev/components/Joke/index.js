@@ -29,6 +29,7 @@ class Joke extends React.Component {
         .then((response) => {
           this.setState({
             data: response.data,
+            error: '',
           });
         })
         .catch((error) => {
@@ -52,6 +53,7 @@ class Joke extends React.Component {
         .then((response) => {
           this.setState({
             data: response.data,
+            error: '',
           });
         })
         .catch((error) => {
@@ -65,6 +67,7 @@ class Joke extends React.Component {
         .then((response) => {
           this.setState({
             data: response.data,
+            error: '',
           });
         })
         .catch((error) => {
