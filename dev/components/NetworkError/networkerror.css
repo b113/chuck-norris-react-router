@@ -1,0 +1,17 @@
+.networkError {
+    text-align: center;
+    color: #FFC400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.networkError__header {
+    font-size: 2em;
+}
+
+.networkError__text {
+    font-size: 1em;
+}

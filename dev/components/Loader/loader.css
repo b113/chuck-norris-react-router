@@ -1,0 +1,12 @@
+.loader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #FFC400;
+}
+
+.loader__text {
+    text-transform: uppercase;
+    font-size: 2em;
+}

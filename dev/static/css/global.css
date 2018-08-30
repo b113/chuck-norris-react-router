@@ -1,0 +1,6 @@
+:global body {
+    background: url("../img/bg-dark1.png") repeat;
+    font-family: Helvetica,Arial,sans-serif;
+    margin: 0;
+    padding: 0;
+}
