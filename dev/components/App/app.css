@@ -14,6 +14,10 @@
     justify-content: space-around;
 }
 
+.active {
+    color: #FFC400;
+}
+
 .menu__itemLink {
     text-decoration: none;
     color: white;

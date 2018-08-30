@@ -1,11 +1,19 @@
 import React from 'react';
 import axios from 'axios';
-import { HashRouter as Router, Route, Switch, NavLink } from 'react-router-dom';
+import {
+  HashRouter as Router, Route, Switch, NavLink,
+} from 'react-router-dom';
 import Joke from '../Joke';
 import NetworkError from '../NetworkError';
 import Loader from '../Loader';
 import styles from './app.css';
 import loading from '../../static/img/loading.gif';
+
+let id = 0;
+const uniqueId = () => {
+  id += 1;
+  return id;
+};
 
 class App extends React.Component {
   constructor() {
@@ -13,15 +21,16 @@ class App extends React.Component {
 
     this.state = {
       data: null,
-    }
+    };
+    this.arrRoute = this.arrRoute.bind(this);
+    this.arrNavlink = this.arrNavlink.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getData();
   }
 
   getData() {
-
     axios('https://api.chucknorris.io/jokes/categories')
       .then((response) => {
         this.setState({
@@ -31,50 +40,54 @@ class App extends React.Component {
       .catch(console.error);
   }
 
+  arrRoute() {
+    const arr = [];
+    const { data } = this.state;
+    arr.push(<Route key={uniqueId()} exact path="/" component={Joke} />);
+    data.map(() => (
+      arr.push(<Route path="/category/:jokeId/" exact component={Joke} key={uniqueId()} />)
+    ));
+    return arr;
+  }
+
+  arrNavlink() {
+    const arr = [];
+    const { data } = this.state;
+    arr.push(<li key={uniqueId()} className={styles.menu__item}><NavLink exact className={styles.menu__itemLink} to="/">HOME</NavLink></li>);
+    data.map(item => (
+      arr.push(<li className={styles.menu__item} key={uniqueId()}><NavLink className={styles.menu__itemLink} to={`/category/${item}/`}>{item}</NavLink></li>)
+    ));
+    return arr;
+  }
+
   render() {
     const { data } = this.state;
     return (
       <Router>
         <nav className={styles.app}>
           <ul className={styles.menu}>
-            <li className={styles.menu__item}><NavLink className={styles.menu__itemLink} to="/">HOME</NavLink></li>
             {
               data ? (
-                data.map((item, i) => (
-                  <li className={styles.menu__item} key={i}><NavLink className={styles.menu__itemLink} to={`/category/${item}/`} >{item}</NavLink></li>
-                ))
+                this.arrNavlink().map(item => item)
               ) : (
-                  <li className={styles.menu__item} ><img className={styles.loader} src={loading} alt="Loading" /></li>
-                )
+                <img className={styles.loader} src={loading} alt="Loading" />
+              )
             }
           </ul>
           <Switch>
-            <Route exact path="/" component={Joke} />
-
             {
               data ? (
-                data.map((item, i) => (
-                  <Route path={`/category/:jokeId/`} exact component={Joke} key={i} />
-                ))
+                this.arrRoute().map(item => item)
               ) : (
-                  <Route component={Loader} />
-                )
+                <Route component={Loader} />
+              )
             }
-            <Route path="*" component={NetworkError} />
+            <Route path="*" render={() => <NetworkError error="Network Error" />} />
           </Switch>
         </nav>
       </Router>
-    )
+    );
   }
 }
 
 export default App;
-
-
-// data ? (
-//     data.map((item, i) => (
-//         <Route path={`/category/:jokeId`} exact component={Joke} key={i} />
-//     ))
-// ) : (
-//         <p>loading</p>
-//     )

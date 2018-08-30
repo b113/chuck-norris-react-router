@@ -1,109 +1,121 @@
 import React from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import NetworkError from '../NetworkError';
 import styles from './joke.css';
 
 
 class Joke extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
+    this.state = {
+      data: null,
+      error: '',
+    };
+    this.clearData = this.clearData.bind(this);
+  }
+
+  componentDidMount() {
+    this.getData();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { match: { params: { jokeId } } } = this.props;
+    const { jokeId: jokePrev } = prevProps.match.params;
+    const { data } = this.state;
+    if (jokePrev !== jokeId) {
+      axios(`https://api.chucknorris.io/jokes/random?category=${jokeId}`)
+        .then((response) => {
+          this.setState({
+            data: response.data,
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
             data: null,
-            error: '',
-        }
+          });
+        });
     }
 
-    componentDidMount() {
-        this.getData();
+    if (data !== null && prevState.data === data) {
+      this.clearData();
     }
+  }
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     console.log(this.props.match.params.jokeId)
-    //     console.log(nextProps.match.params.jokeId)
-    //     if (nextProps.match.params.jokeId !== this.props.match.params.jokeId) {
-    //         axios(`https://api.chucknorris.io/jokes/random?category=${this.props.match.params.jokeId}`)
-    //             .then((response) => {
-    //                 this.setState({
-    //                     data: response.data,
-    //                 });
-    //             })
-    //             .catch(console.error);
-    //     }
-    //     return true;
-    // }
-
-    componentDidUpdate(prevProps, nextState) {
-        if (prevProps.match.params.jokeId !== this.props.match.params.jokeId) {
-            axios(`https://api.chucknorris.io/jokes/random?category=${this.props.match.params.jokeId}`)
-                .then((response) => {
-                    this.setState({
-                        data: response.data,
-                    });
-                })
-                .catch((error) => {
-                    this.setState({
-                        error: error.message,
-                        data: null,
-                    });
-                });
-        }
-        return true;
+  getData() {
+    const { match: { params: { jokeId } } } = this.props;
+    const { match: { params } } = this.props;
+    if (JSON.stringify(params) === '{}') {
+      axios('https://api.chucknorris.io/jokes/random')
+        .then((response) => {
+          this.setState({
+            data: response.data,
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
+            data: null,
+          });
+        });
+    } else {
+      axios(`https://api.chucknorris.io/jokes/random?category=${jokeId}`)
+        .then((response) => {
+          this.setState({
+            data: response.data,
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            error: error.message,
+            data: null,
+          });
+        });
     }
+  }
 
+  clearData() {
+    this.setState({ data: null });
+  }
 
-
-    getData() {
-        let { jokeId } = this.props.match.params;
-        if (JSON.stringify(this.props.match.params) === '{}') {
-            axios('https://api.chucknorris.io/jokes/random')
-                .then((response) => {
-                    this.setState({
-                        data: response.data,
-                    });
-                })
-                .catch((error) => {
-                    this.setState({
-                        error: error.message,
-                        data: null,
-                    });
-                });
-        } else {
-            axios(`https://api.chucknorris.io/jokes/random?category=${jokeId}`)
-                .then((response) => {
-                    this.setState({
-                        data: response.data,
-                    });
-                })
-                .catch((error) => {
-                    this.setState({
-                        error: error.message,
-                        data: null,
-                    });
-                });
-        }
-    }
-
-    render() {
-        const { data, error } = this.state;
-        return (
-            <div className={styles.joke}>
-                {
-                    data ? (
-                        <div className={styles.joke__item}>
-                            <div className={styles.joke__itemWrapper}>
-                                <p className={styles.joke__text}>{data.value}</p>
-                                <p className={styles.joke__category}>Category: {data.category === null ? 'dunno' : data.category[0]}</p>
-                            </div>
-                        </div>
+  render() {
+    const { data, error } = this.state;
+    return (
+      <div className={styles.joke}>
+        {
+          data ? (
+            <div className={styles.joke__item}>
+              <div className={styles.joke__itemWrapper}>
+                <p className={styles.joke__text}>{data.value}</p>
+                <p className={styles.joke__category}>
+                  Category:&nbsp;
+                  {
+                    data.category === null ? (
+                      'dunno'
                     ) : (
-                            <NetworkError error={error} />
-                        )
-                }
+                      data.category[0]
+                    )
+                  }
+                </p>
+              </div>
             </div>
-        )
-    }
+          ) : (
+            <NetworkError error={error} />
+          )
+        }
+      </div>
+    );
+  }
 }
 
-export default Joke;
+Joke.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      jokeId: PropTypes.string,
+    }),
+  }).isRequired,
+};
 
+export default Joke;

@@ -6,20 +6,22 @@ import errorImg from '../../static/img/404.png';
 
 
 const NetworkError = ({ error }) => {
-  if (error === 'Network Error' || error === undefined) {
+  if (error === 'Network Error') {
     return (
       <div className={styles.networkError}>
         <img className={styles.networkError__img} src={errorImg} alt="Loading" />
-        <h2 className={styles.networkError__header}>Whoa, your're lost buddy!</h2>
-        <p className={styles.networkError__text}>You don't find Chuck Norris, Chuck Norris finds you!</p>
+        <h2 className={styles.networkError__header}>Whoa, your&apos;re lost buddy!</h2>
+        <p className={styles.networkError__text}>
+          You don&apos;t find Chuck Norris, Chuck Norris finds you!
+        </p>
       </div>
-    )
+    );
   }
   return <Loader />;
 };
 
-// NetworkError.propTypes = {
-//   error: PropTypes.string.isRequired,
-// };
+NetworkError.propTypes = {
+  error: PropTypes.string.isRequired,
+};
 
 export default NetworkError;
