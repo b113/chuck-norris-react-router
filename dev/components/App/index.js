@@ -55,7 +55,7 @@ class App extends React.Component {
     const { data } = this.state;
     arr.push(<li key={uniqueId()} className={styles.menu__item}><NavLink exact className={styles.menu__itemLink} to="/">HOME</NavLink></li>);
     data.map(item => (
-      arr.push(<li className={styles.menu__item} key={uniqueId()}><NavLink className={styles.menu__itemLink} to={`/category/${item}/`}>{item}</NavLink></li>)
+      arr.push(<li className={styles.menu__item} key={uniqueId()}><NavLink exact className={styles.menu__itemLink} to={`/category/${item}/`}>{item}</NavLink></li>)
     ));
     return arr;
   }
